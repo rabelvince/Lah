@@ -102,11 +102,8 @@ install_mariadb() {
 install_node_red() {
     echo -e "${GREEN}Node-RED telepítése...${NC}"
     log "Node-RED telepítés"
-
     apt install -y curl >> "$LOGFILE" 2>&1
-
     curl -fsSL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered | bash
-
     systemctl enable nodered.service
     systemctl start nodered.service
 }
@@ -117,13 +114,15 @@ install_phpmyadmin() {
     apt install -y phpmyadmin >> "$LOGFILE" 2>&1
 }
 
-# 🎧 Zene letöltése és lejátszása (csak ha minden jó)
+# ==========================
+# 🎵 ZENE (MINDIG LEJÁTSZÓDIK)
+# ==========================
 download_and_play_music() {
     MUSIC_URL="https://www.youtube.com/watch?v=M9aq3hzRYP0"
-    MUSIC_FILE="/tmp/install_music.mp3"
+    MUSIC_FILE="/tmp/install_end_music.mp3"
 
-    echo -e "${YELLOW}Zene letöltése és lejátszása...${NC}"
-    log "Zene letöltése"
+    echo -e "${YELLOW}Telepítés véget ért – zene indul...${NC}"
+    log "Zene lejátszás indítása"
 
     apt install -y yt-dlp mpg123 >> "$LOGFILE" 2>&1
 
@@ -131,7 +130,6 @@ download_and_play_music() {
         -o "$MUSIC_FILE" "$MUSIC_URL" >> "$LOGFILE" 2>&1
 
     if [[ -f "$MUSIC_FILE" ]]; then
-        echo -e "${GREEN}🎶 Zene lejátszása...${NC}"
         mpg123 "$MUSIC_FILE"
     else
         echo -e "${RED}Zene letöltése sikertelen!${NC}"
@@ -185,32 +183,11 @@ case $choice in
         ;;
 esac
 
-# ===============================
-# Szolgáltatások ellenőrzése
-# ===============================
 check_service apache2 "Apache2"
 check_service ssh "SSH"
 check_service mosquitto "Mosquitto"
 check_service nodered.service "Node-RED"
 check_service mariadb "MariaDB"
-
-# ===============================
-# 🟢 Csak ha minden sikeres
-# ===============================
-ALL_OK=true
-for key in "${!RESULTS[@]}"; do
-    if [[ "${RESULTS[$key]}" != "SIKERES" ]]; then
-        ALL_OK=false
-        break
-    fi
-done
-
-if $ALL_OK; then
-    download_and_play_music
-else
-    echo -e "${RED}Nem minden szolgáltatás fut sikeresen => zene NEM szól!${NC}"
-    log "Zene nem játszódott le (hiba)"
-fi
 
 clear
 echo "======================================"
@@ -232,7 +209,10 @@ uptime
 echo
 echo -e "${YELLOW}Megjegyzés:${NC} Nyitott szolgáltatások esetén tűzfal használata ajánlott."
 
-log "Script sikeresen lefutott"
+log "Script befejeződött"
+
+# 🎶 ZENE MINDIG A LEGESLEG VÉGÉN
+download_and_play_music
 
 echo -e "${BLUE}
 ██╗   ██╗███████╗ █████╗ ████████╗
