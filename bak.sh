@@ -182,7 +182,6 @@ echo -e "${YELLOW}Megjegyzés:${NC} Nyitott szolgáltatások esetén tűzfal has
 log "Script sikeresen lefutott"
 
 # YEAT ASCII kékben
-clear
 BLUE="\033[1;34m"
 NC="\033[0m"
 
