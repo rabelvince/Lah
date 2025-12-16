@@ -117,9 +117,7 @@ install_phpmyadmin() {
     apt install -y phpmyadmin >> "$LOGFILE" 2>&1
 }
 
-# ==========================
-# 🎵 ZENE LETÖLTÉS + LEJÁTSZÁS
-# ==========================
+# 🎧 Zene letöltése és lejátszása (csak ha minden jó)
 download_and_play_music() {
     MUSIC_URL="https://www.youtube.com/watch?v=M9aq3hzRYP0"
     MUSIC_FILE="/tmp/install_music.mp3"
@@ -127,14 +125,11 @@ download_and_play_music() {
     echo -e "${YELLOW}Zene letöltése és lejátszása...${NC}"
     log "Zene letöltése"
 
-    # Szükséges csomagok
     apt install -y yt-dlp mpg123 >> "$LOGFILE" 2>&1
 
-    # Letöltés MP3-ba
     yt-dlp -x --audio-format mp3 --audio-quality 0 \
         -o "$MUSIC_FILE" "$MUSIC_URL" >> "$LOGFILE" 2>&1
 
-    # Lejátszás
     if [[ -f "$MUSIC_FILE" ]]; then
         echo -e "${GREEN}🎶 Zene lejátszása...${NC}"
         mpg123 "$MUSIC_FILE"
@@ -190,14 +185,32 @@ case $choice in
         ;;
 esac
 
-# 🎵 ZENE A TELEPÍTÉS VÉGÉN
-download_and_play_music
-
+# ===============================
+# Szolgáltatások ellenőrzése
+# ===============================
 check_service apache2 "Apache2"
 check_service ssh "SSH"
 check_service mosquitto "Mosquitto"
 check_service nodered.service "Node-RED"
 check_service mariadb "MariaDB"
+
+# ===============================
+# 🟢 Csak ha minden sikeres
+# ===============================
+ALL_OK=true
+for key in "${!RESULTS[@]}"; do
+    if [[ "${RESULTS[$key]}" != "SIKERES" ]]; then
+        ALL_OK=false
+        break
+    fi
+done
+
+if $ALL_OK; then
+    download_and_play_music
+else
+    echo -e "${RED}Nem minden szolgáltatás fut sikeresen => zene NEM szól!${NC}"
+    log "Zene nem játszódott le (hiba)"
+fi
 
 clear
 echo "======================================"
