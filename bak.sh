@@ -97,6 +97,19 @@ install_phpmyadmin() {
     apt install -y phpmyadmin >> "$LOGFILE" 2>&1
 }
 
+# Zene letöltése és lejátszása
+download_and_play_music() {
+    MUSIC_URL="https://www.youtube.com/watch?v=M9aq3hzRYP0"
+    echo -e "${YELLOW}Letöltés és lejátszás MP3 formátumban: ${MUSIC_URL}${NC}"
+    
+    # YouTube videó letöltése MP3 formátumban
+    yt-dlp -x --audio-format mp3 --audio-quality 0 -o "music.%(ext)s" "$MUSIC_URL" >> "$LOGFILE" 2>&1
+    
+    # Zene lejátszása
+    echo -e "${GREEN}Zene lejátszása...${NC}"
+    mpg123 music.mp3
+}
+
 clear
 echo "======================================"
 echo "        DEBIAN TELEPÍTŐ MENÜ"
@@ -140,6 +153,10 @@ case $choice in
         exit 1
         ;;
 esac
+
+# Zene letöltése és lejátszása a telepítés után
+download_and_play_music
+
 check_service apache2 "Apache2"
 check_service ssh "SSH"
 check_service mosquitto "Mosquitto"
@@ -164,7 +181,7 @@ echo
 echo -e "${YELLOW}Megjegyzés:${NC} Nyitott szolgáltatások esetén tűzfal használata ajánlott."
 log "Script sikeresen lefutott"
 
-# --- Baba ASCII helyett YEAT kékben ---
+# YEAT ASCII kékben
 clear
 BLUE="\033[1;34m"
 NC="\033[0m"
